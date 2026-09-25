@@ -59,6 +59,8 @@ The SQL script (`SQLQuery1.sql`) is organized into 12 numbered sections, each an
 - Worst-selling pizza: `The Brie Carre Pizza` (490 sold)
 - Busiest day: `Friday` | Busiest hour: `12 PM (lunch rush)`
 
+- ![Dashboard](pizza_sales_dashboard.png)
+
 ## 🚀 How to Run This Project
 
 1. Download `pizza_sales.csv` (or `.xlsx`) from this repo.
