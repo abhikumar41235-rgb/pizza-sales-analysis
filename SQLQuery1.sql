@@ -24,50 +24,52 @@ FROM pizza_sales;
 
 -- 5. Average pizzas per order (Har order me avg kitne pizza the )
 
-SELECT CAST (SUM(quantity) AS DECIMAL(10,2)) /
-       CAST (COUNT(DISTINCT order_id) AS DECIMAL(10,2)) AS Avg_pizzas_per_order
+SELECT
+    ROUND(SUM(quantity) / COUNT(DISTINCT order_id), 2)
+    AS avg_pizzas_per_order
 FROM pizza_sales;
 
 -- 6. Daily Trend for total orders 
 
-SELECT 
-      DATENAME(DW, order_date) AS order_day,
-      COUNT(DISTINCT order_id) AS total_orders
+SELECT
+    DAYNAME(order_date) AS order_day,
+    COUNT(DISTINCT order_id) AS total_orders
 FROM pizza_sales
-GROUP BY DATENAME(DW, order_date);
+GROUP BY DAYNAME(order_date);
 
 -- 7. Hourly Trend for total orders
 SELECT
-      DATEPART(HOUR, order_time) AS order_hours,
-      COUNT(DISTINCT order_id) AS total_orders
-FROM pizza_sales 
-GROUP BY DATEPART(HOUR,order_time)
-ORDER BY DATEPART(HOUR, order_time);
+    HOUR(order_time) AS order_hours,
+    COUNT(DISTINCT order_id) AS total_orders
+FROM pizza_sales
+GROUP BY HOUR(order_time)
+ORDER BY HOUR(order_time);
 
 
 -- 8. Percantage of sales by pizza category
-
-SELECT * FROM pizza_sales
-         
-SELECT pizza_category,
-         SUM(total_price) AS Total_sales,
-         SUM(total_price)*100/
-         (SELECT SUM(total_price) FROM pizza_sales WHERE MONTH(order_date)=1) AS PCT
+SELECT
+    pizza_category,
+    SUM(total_price) AS total_sales,
+    ROUND(
+        SUM(total_price) * 100 /
+        SUM(SUM(total_price)) OVER (), 2
+    ) AS sales_percentage
 FROM pizza_sales
-WHERE MONTH(order_date)=1
+WHERE MONTH(order_date) = 1
 GROUP BY pizza_category;
 
 -- 9. Percentage  of sales by pizza size
 
-SELECT * FROM pizza_sales
-         
-SELECT pizza_size,
-         SUM(total_price) AS Total_sales,
-         SUM(total_price)*100/
-         (SELECT SUM(total_price) FROM pizza_sales ) AS PCT
+SELECT
+    pizza_size,
+    SUM(total_price) AS total_sales,
+    ROUND(
+        SUM(total_price) * 100 /
+        SUM(SUM(total_price)) OVER (), 2
+    ) AS PCT
 FROM pizza_sales
 GROUP BY pizza_size
-ORDER BY PCT DESC
+ORDER BY PCT DESC;
 
 -- 10. Total pizzas sold by pizza category
 
